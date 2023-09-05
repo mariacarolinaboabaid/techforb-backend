@@ -18,7 +18,7 @@ router.post('/postUser', userValidator.validateBody, userController.createUser);
 
 
 // Balance
-router.get('/getBalance', userController.getUserBalance);
+router.get('/getBalance/:id', userController.getUserBalance);
 
 
 // Transactions

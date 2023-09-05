@@ -1,38 +1,47 @@
 const transactionModel = require('../models/TransactionModel');
 const userModel = require('../models/UserModel');
 
-const getAll = async(request, response) => {
-    const transactions = await transactionModel.getAll();
-    return response.status(200).json(transactions);
+const getAll = async (request, response) => {
+    try {
+        const transactions = await transactionModel.findAll();
+        return response.status(200).json(transactions);
+    }
+    catch (error) {
+        console.log(error);
+        return response.status(400).send(error);
+    }
 };
 
-const createTransaction = async(request, response) => 
-{
-    const userId = parseInt(request.params.id);
-    const createdTransaction = await transactionModel.createTransaction(userId, request.body);
+const createTransaction = async (request, response) => {
+    try {
+        const userId = parseInt(request.params.id);
+        const createdTransaction = await transactionModel.create(request.body);
 
-    // Upating the value of balance 
-    const balance = await userModel.getUserBalance();
-    const balanceNumber = parseFloat(balance[0]["balance"]);
+        // Updating the balance
+        const balance = await userModel.findOne({ attributes: ['balance']} , { where: { id: userId } });
+        const balanceNumber = parseFloat(balance["dataValues"]["balance"]);
+        var newValue;
 
-    var newValue = 0
-    
-    if (request.body["type"] === "transfer" || request.body["type"] === "withdraw")
-    {
-        newValue = balanceNumber - request.body.value;
+        if (request.body["type"] === "transfer" || request.body["type"] === "withdraw") {
+            newValue = balanceNumber - request.body.value;
+        }
+        else if (request.body["type"] === "deposit") {
+            newValue = balanceNumber + request.body.value;
+        }
+
+        await userModel.update({ balance: newValue }, { where: {id : userId } });
+     
+        return response.status(201).json(createdTransaction);
     }
-    else if (request.body["type"] === "deposit")
-    {
-        newValue = balanceNumber + request.body.value;
+    catch (error) {
+        console.log(error);
+        return response.status(400).send(error);
     }
-
-    const updatedBalance = await userModel.updateBalance(userId, newValue);
-
-    return response.status(201).json(createdTransaction);
-   
-}
+};
 
 module.exports = {
-    getAll, 
+    getAll,
     createTransaction
 };
+
+
