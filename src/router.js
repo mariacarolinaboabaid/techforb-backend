@@ -1,22 +1,33 @@
 const express = require('express');
-const { request, response } = require('./app');
+
+const userController =  require('./controllers/UserController');
+const userValidator = require('./middlewares/userMiddleware');
+
+const transactionController =  require('./controllers/transactionController');
+const transactionValidator = require('./middlewares/transactionMiddleware');
+
+const cardController =  require('./controllers/cardController');
+const cardValidator = require('./middlewares/cardMiddleware')
 
 // Creation of routes
 const router = express.Router();
 
-// Get users
-router.get('/getUsers', (request, response) => { response.status(200).send('Users')});
+// Users
+router.get('/getUsers', userController.getAll);
+router.post('/postUser', userValidator.validateBody, userController.createUser);
 
-// Get balance
-router.get('/getBalance', (request, response) => { response.status(200).send('Balance!')});
 
-// Get transactions
-router.get('/getTransactions', (request, response) => { response.status(200).send('Transactions!')});
+// Balance
+router.get('/getBalance', userController.getUserBalance);
 
-// Get cards
-router.get('/getCards', (request, response) => { response.status(200).send('Cards!')});
 
-// Get optionsMenu
-router.get('/getOptionsMenu', (request, response) => { response.status(200).send('Options menu')});
+// Transactions
+router.get('/getTransactions', transactionController.getAll);
+router.post('/postTransaction/:id', transactionValidator.validateBody, transactionController.createTransaction);
+
+// Cards
+router.get('/getCards', cardController.getAll);
+router.post('/postCard/:id', cardValidator.validateBody, cardController.createCard);
 
 module.exports = router;
+
