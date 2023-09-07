@@ -13,8 +13,8 @@ Transaction.init(
             primaryKey: true
         },
         date: {
-            type: DataTypes.DATEONLY,
-            defaultValue: DataTypes.NOW 
+            type: DataTypes.STRING,
+            allowNull: false,
         },
         type: {
             type: DataTypes.STRING,

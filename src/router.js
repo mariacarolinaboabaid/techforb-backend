@@ -22,11 +22,11 @@ router.get('/getBalance/:id', userController.getUserBalance);
 
 
 // Transactions
-router.get('/getTransactions', transactionController.getAll);
+router.get('/getTransactions/:id', transactionController.getAll);
 router.post('/postTransaction/:id', transactionValidator.validateBody, transactionController.createTransaction);
 
 // Cards
-router.get('/getCards', cardController.getAll);
+router.get('/getCards/:id', cardController.getAll);
 router.post('/postCard/:id', cardValidator.validateBody, cardController.createCard);
 
 module.exports = router;

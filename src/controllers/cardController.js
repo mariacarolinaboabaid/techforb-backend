@@ -2,7 +2,8 @@ const cardModel = require('../models/CardModel');
 
 const getAll = async (request, response) => {
     try {
-        const cards = await cardModel.findAll();
+        const userId = parseInt(request.params.id);
+        const cards = await cardModel.findAll({ where: { userId: userId } });
         return response.status(200).json(cards);
     }
     catch (error) {
@@ -18,8 +19,12 @@ const createCard = async (request, response) => {
         return response.status(201).json(createdCard);
     }
     catch (error) {
-        console.log(error);
-        return response.status(400).send(error);
+        if (error.name === 'SequelizeValidationError') {
+            const errorMessages = error.errors.map((err) => err.message);
+            return response.status(400).json({ error: 'Validation Error', messages: errorMessages });
+        } else {
+            return response.status(500).json({ error: 'Internal Server Error' });
+        }
     }
 };
 

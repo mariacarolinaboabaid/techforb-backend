@@ -13,7 +13,7 @@ Card.init(
             primaryKey: true
         },
         expirationDate: {
-            type: DataTypes.DATEONLY,
+            type: DataTypes.STRING,
             allowNull: false
         },
         number: {
